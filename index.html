@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>回収車両 簡易査定ツール（Unicor案件）</title>
+<title>回収車両 簡易査定ツール（INVES CORE案件）</title>
 <style>
   :root{
     --accent:#1a5fb4;
@@ -241,7 +241,7 @@
 
 <header>
   <h1>回収車両 簡易査定ツール</h1>
-  <p>Unicor案件・銀行担保回収車両向け／iPadでその場入力→印刷・PDF出力</p>
+  <p>INVES CORE案件・銀行担保回収車両向け／iPadでその場入力→印刷・PDF出力</p>
 </header>
 
 <div class="wrap">
@@ -333,7 +333,17 @@
         <option value="4">4本</option>
       </select>
     </div>
-    <div class="cfg-inline">1本あたり単価(MNT): <input type="number" id="tireUnit" value="120000"></div>
+    <div class="field">
+      <label>タイヤサイズ（1本あたりの減点を自動設定・編集可）</label>
+      <select id="tireSize" onchange="onTireSizeChange()">
+        <option value="17">17インチ（目安 −3点/本）</option>
+        <option value="18">18インチ（目安 −3.5点/本）</option>
+        <option value="19">19インチ（目安 −4点/本）</option>
+        <option value="__other__">その他（点数を手入力）</option>
+      </select>
+    </div>
+    <div class="cfg-inline">1本あたり減点(点): <input type="number" id="tirePtsUnit" value="3" step="0.5"></div>
+    <div class="note">日本自動車査定協会（JAAI）の方式にならい、タイヤは実額ではなく点数で減点します（1点＝基準価格の0.5%）。次のいずれかに明らかに該当する場合を「交換必要」としてカウントしてください：①見てすぐ分かるほど空気が抜けている、②見てすぐ分かるほど溝が1.6mm未満（スリップサイン露出）。判断に迷う程度の摩耗はカウント対象外です。</div>
   </div>
 
   <!-- 7. Keys -->
@@ -352,10 +362,26 @@
     <h2>8. 重大な問題</h2>
     <label class="checkrow major-row"><input type="checkbox" id="flagAccident"><span>事故現状（自走不可）</span><span class="pt" id="flagAccidentPct">−20%</span></label>
     <div class="cfg-inline">減価率(%): <input type="number" id="flagAccidentUnit" value="20"></div>
-    <label class="checkrow major-row"><input type="checkbox" id="flagFlood"><span>水没歴あり</span><span class="pt" id="flagFloodPct">−40%</span></label>
-    <div class="cfg-inline">減価率(%): <input type="number" id="flagFloodUnit" value="40"></div>
-    <label class="checkrow major-row"><input type="checkbox" id="flagFrame"><span>フレーム修正歴あり</span><span class="pt" id="flagFramePct">−30%</span></label>
-    <div class="cfg-inline">減価率(%): <input type="number" id="flagFrameUnit" value="30"></div>
+    <div class="field">
+      <label>水没歴（浸水レベル）</label>
+      <select id="floodLevel">
+        <option value="none">水没なし</option>
+        <option value="A">A：ドア下端付近まで（−30%）</option>
+        <option value="B">B：シート座面高さまで（−70%）</option>
+        <option value="C">C：ボンネット高さまで（−90%）</option>
+      </select>
+    </div>
+    <div class="note">浸水の最高到達位置で判定してください。判断に迷う場合は高い方のレベルを採用します。</div>
+    <div class="field">
+      <label>フレーム修正歴（修正機固定跡・取替/修理部位）</label>
+      <select id="frameLevel">
+        <option value="none">修正歴なし（固定跡なし）</option>
+        <option value="A">A：ラジエータサポート／バックパネルの取替・修理（−10%）</option>
+        <option value="B">B：フェンダエプロン／センターピラーの取替・修理（−20%）</option>
+        <option value="C">C：フロントサイドメンバー／リヤサイドメンバー／フロアの取替・修理（−35%）</option>
+      </select>
+    </div>
+    <div class="note">フレーム修正機による固定跡の有無で判定してください。跡がある場合、該当する取替・修理部位のうち最も重度なレベルを採用します。</div>
     <div class="field" style="margin-top:8px;">
       <label>特記事項 ― よくある内容（複数選択可、モンゴル語で挿入されます）</label>
       <div class="preset-box no-print" id="notePresetBox"></div>
@@ -461,18 +487,18 @@
 <script>
 // ---- configurable point tables ----
 const EXTERIOR = [
-  {pts:2,  label:"目立つ傷なし",        mn:"Мэдэгдэхүйц зураас байхгүй"},
-  {pts:0,  label:"目立つへこみあり",      mn:"Мэдэгдэхүйц хонхойлттой"},
-  {pts:-2, label:"全体的な傷・へこみ有",  mn:"Ерөнхийдөө зураас, хонхойлттой"},
-  {pts:-4, label:"外板パネル補修歴あり",  mn:"Гадна панелийн засварын түүхтэй"},
-  {pts:-6, label:"交換必要パネルあり",    mn:"Солих шаардлагатай панельтой"}
+  {pts:2,   label:"目立つ傷なし",        mn:"Мэдэгдэхүйц зураас байхгүй"},
+  {pts:-3,  label:"目立つへこみあり",      mn:"Мэдэгдэхүйц хонхойлттой"},
+  {pts:-8,  label:"全体的な傷・へこみ有",  mn:"Ерөнхийдөө зураас, хонхойлттой"},
+  {pts:-6,  label:"外板パネル補修歴あり",  mn:"Гадна панелийн засварын түүхтэй"},
+  {pts:-12, label:"交換必要パネルあり",    mn:"Солих шаардлагатай панельтой"}
 ];
 const INTERIOR = [
   {pts:2,  label:"新車同様",        mn:"Шинэ мэт цэвэрхэн"},
   {pts:0,  label:"年数相応",        mn:"Насны хэрэглээнд тохирсон байдалтай"},
-  {pts:-1, label:"目立つ汚れ有",     mn:"Мэдэгдэхүйц бохирдолтой"},
-  {pts:-2, label:"損傷箇所あり",     mn:"Гэмтэлтэй хэсэгтэй"},
-  {pts:-3, label:"シート破れあり",    mn:"Суудал урагдсан"}
+  {pts:-2, label:"目立つ汚れ有",     mn:"Мэдэгдэхүйц бохирдолтой"},
+  {pts:-5, label:"損傷箇所あり",     mn:"Гэмтэлтэй хэсэгтэй"},
+  {pts:-8, label:"シート破れあり",    mn:"Суудал урагдсан"}
 ];
 
 const sel = {exterior:null, interior:null};
@@ -507,7 +533,10 @@ function recalc(){
   const extPts = sel.exterior || 0;
   const intPts = sel.interior || 0;
   const mechPts = (chk("mechNoise")?-2:0) + (chk("mechOilLeak")?-3:0);
-  const score = 80 + extPts + intPts + mechPts;
+  const tirePtsUnit = num("tirePtsUnit");
+  const tireCount = num("tireCount");
+  const tirePts = -(tirePtsUnit * tireCount);
+  const score = 80 + extPts + intPts + mechPts + tirePts;
   const scoreAdjRate = (score - 80) * 0.005;
 
   const base = num("basePrice");
@@ -515,9 +544,7 @@ function recalc(){
 
   // major flags
   const flags = [
-    {id:"flagAccident", unit:"flagAccidentUnit", label:"事故現状（自走不可）"},
-    {id:"flagFlood",    unit:"flagFloodUnit",    label:"水没歴あり"},
-    {id:"flagFrame",    unit:"flagFrameUnit",    label:"フレーム修正歴あり"}
+    {id:"flagAccident", unit:"flagAccidentUnit", label:"事故現状（自走不可）"}
   ];
   let majorMultiplier = 1;
   let majorPctTotal = 0;
@@ -529,16 +556,31 @@ function recalc(){
       majorPctTotal += num(f.unit);
     }
   });
+
+  // flood damage level (A/B/C 3-tier)
+  const FLOOD_LEVELS = { none:0, A:30, B:70, C:90 };
+  const floodLevel = document.getElementById("floodLevel").value;
+  const floodPct = FLOOD_LEVELS[floodLevel] || 0;
+  if(floodPct > 0){
+    majorMultiplier *= (1 - floodPct/100);
+    majorPctTotal += floodPct;
+  }
+
+  // frame repair level (A/B/C 3-tier)
+  const FRAME_LEVELS = { none:0, A:10, B:20, C:35 };
+  const frameLevel = document.getElementById("frameLevel").value;
+  const framePct = FRAME_LEVELS[frameLevel] || 0;
+  if(framePct > 0){
+    majorMultiplier *= (1 - framePct/100);
+    majorPctTotal += framePct;
+  }
+
   const afterMajor = price * majorMultiplier;
 
   // itemized deductions
   const batteryUnit = num("batteryUnit");
   document.getElementById("batteryCostLabel").textContent = "−" + fmtSaya(batteryUnit);
   const batteryCost = chk("battery") ? batteryUnit : 0;
-
-  const tireUnit = num("tireUnit");
-  const tireCount = num("tireCount");
-  const tireCost = tireUnit * tireCount;
 
   const keyUnit = num("keyUnit");
   const keyShortage = Math.max(0, num("keyStandard") - num("keyOwned"));
@@ -554,7 +596,7 @@ function recalc(){
     monthsNoteEl.textContent = "輸入年月と査定日を入力すると自動計算されます";
   }
 
-  const itemTotal = batteryCost + tireCost + keyCost + mnMileageCost;
+  const itemTotal = batteryCost + keyCost + mnMileageCost;
   let final = afterMajor - itemTotal;
   final = Math.max(0, Math.round(final/1000)*1000);
 
@@ -565,7 +607,8 @@ function recalc(){
   document.getElementById("finalOut").textContent = fmtSaya(final);
 
   window._calc = {score, scoreAdjRate, base, afterMajor, majorPctTotal, itemTotal, final,
-    batteryCost, tireCost, tireCount, keyCost, keyShortage, mnMileageCost, mnMonths};
+    batteryCost, tirePts, tirePtsUnit, tireCount, keyCost, keyShortage, mnMileageCost, mnMonths,
+    floodLevel, floodPct, frameLevel, framePct};
 
   adjustBottomSpace();
 }
@@ -601,11 +644,12 @@ function resetForm(){
   document.getElementById("keyStandard").value=2;
   document.getElementById("keyUnit").value=200000;
   document.getElementById("batteryUnit").value=150000;
-  document.getElementById("tireUnit").value=120000;
+  document.getElementById("tireSize").value="17";
+  document.getElementById("tirePtsUnit").value=3;
   document.getElementById("mnMonthUnit").value=20000;
   document.getElementById("flagAccidentUnit").value=20;
-  document.getElementById("flagFloodUnit").value=40;
-  document.getElementById("flagFrameUnit").value=30;
+  document.getElementById("floodLevel").value="none";
+  document.getElementById("frameLevel").value="none";
   document.getElementById("tireCount").value=0;
   document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
   sel.exterior=null; sel.interior=null;
@@ -635,7 +679,7 @@ function mnLabelFor(list, pts){
 
 function preparePrint(){
   const c = window._calc;
-  document.getElementById("psMeta").innerHTML = "Юникор төсөл - Хураагдсан тээврийн хэрэгслийн үнэлгээ<br>Үүсгэсэн огноо: " + new Date().toLocaleDateString("mn-MN");
+  document.getElementById("psMeta").innerHTML = "INVES CORE төсөл - Хураагдсан тээврийн хэрэгслийн үнэлгээ<br>Үүсгэсэн огноо: " + new Date().toLocaleDateString("mn-MN");
   document.getElementById("psPlate").textContent = document.getElementById("plate").value || "-";
   document.getElementById("psModel").textContent = (document.getElementById("maker").value||"") + " " + (document.getElementById("model").value||"");
   document.getElementById("psVin").textContent = document.getElementById("vin").value || "-";
@@ -655,10 +699,12 @@ function preparePrint(){
     chk("mechOilLeak") ? "Тос гоожилттой" : null
   ].filter(Boolean).join(", ") || "Хэвийн ажиллагаатай";
   const mechPts = (chk("mechNoise")?-2:0) + (chk("mechOilLeak")?-3:0);
+  const tireLabel = c.tireCount > 0 ? `Солих шаардлагатай (${c.tireCount} ш)` : "Солих шаардлагагүй";
   const cards = [
     {title:"Гадна тал", value: extSel? mnLabelFor(EXTERIOR, extPts) : "Сонгоогүй", pts: extPts},
     {title:"Дотор тал", value: intSel? mnLabelFor(INTERIOR, intPts) : "Сонгоогүй", pts: intPts},
-    {title:"Ажиллагаа / техникийн байдал", value: mechLabel, pts: mechPts}
+    {title:"Ажиллагаа / техникийн байдал", value: mechLabel, pts: mechPts},
+    {title:"Дугуй", value: tireLabel, pts: c.tirePts}
   ];
   document.getElementById("psCatCards").innerHTML = cards.map(card => `
     <div class="ps-grade-card">
@@ -670,15 +716,32 @@ function preparePrint(){
 
   let itemRows = "<tr><th>Зүйл</th><th>Дүн</th></tr>";
   itemRows += `<tr><td>Аккумулятор солих</td><td>${chk("battery")? "−"+fmtSaya(c.batteryCost) : "Шаардлагагүй"}</td></tr>`;
-  itemRows += `<tr><td>Дугуй солих (${c.tireCount} ш)</td><td>${c.tireCost>0? "−"+fmtSaya(c.tireCost) : "Шаардлагагүй"}</td></tr>`;
   itemRows += `<tr><td>Дутуу түлхүүр (${c.keyShortage} ш)</td><td>${c.keyCost>0? "−"+fmtSaya(c.keyCost) : "Дутагдалгүй"}</td></tr>`;
   itemRows += `<tr><td>Монголд байсан хугацаа (${c.mnMonths!==null?c.mnMonths:0} сар)</td><td>−${fmtSaya(c.mnMileageCost)}</td></tr>`;
   document.getElementById("psItemTable").innerHTML = itemRows;
 
+  const FLOOD_LEVEL_MN = {
+    A: "A түвшин (хаалганы доод ирмэг хүртэл)",
+    B: "B түвшин (сандлын суудлын өндөр хүртэл)",
+    C: "C түвшин (моторын капот хүртэл)"
+  };
+  const floodDisplay = c.floodLevel !== "none"
+    ? `Тийм — ${FLOOD_LEVEL_MN[c.floodLevel]} (−${c.floodPct}%)`
+    : "Үгүй";
+
+  const FRAME_LEVEL_MN = {
+    A: "A түвшин (радиаторын суурь / ар панель солих)",
+    B: "B түвшин (фендер апрон / төв багана солих)",
+    C: "C түвшин (урд/хойд лонжерон, шал солих)"
+  };
+  const frameDisplay = c.frameLevel !== "none"
+    ? `Тийм — ${FRAME_LEVEL_MN[c.frameLevel]} (−${c.framePct}%)`
+    : "Үгүй";
+
   let flagRows = "<tr><th>Зүйл</th><th>Байдал</th></tr>";
   flagRows += `<tr><td>Ослын байдалтай (өөрөө явах боломжгүй)</td><td>${chk("flagAccident")?"Тийм":"Үгүй"}</td></tr>`;
-  flagRows += `<tr><td>Усанд норсон түүхтэй</td><td>${chk("flagFlood")?"Тийм":"Үгүй"}</td></tr>`;
-  flagRows += `<tr><td>Хүрээ засварын түүхтэй</td><td>${chk("flagFrame")?"Тийм":"Үгүй"}</td></tr>`;
+  flagRows += `<tr><td>Усанд норсон түүхтэй</td><td>${floodDisplay}</td></tr>`;
+  flagRows += `<tr><td>Хүрээ засварын түүхтэй</td><td>${frameDisplay}</td></tr>`;
   document.getElementById("psFlagTable").innerHTML = flagRows;
 
   const grade = calcGrade(c.score);
@@ -797,6 +860,17 @@ function onModelChange(){
     otherInput.style.display = "none";
     otherInput.value = "";
     document.getElementById("model").value = val;
+  }
+}
+
+// ---- Tire size -> default deduction points (JAAI方式にならった点数減点, 2026) ----
+const TIRE_SIZE_PRICES = { "17": 3, "18": 3.5, "19": 4 };
+
+function onTireSizeChange(){
+  const size = document.getElementById("tireSize").value;
+  if(size !== OTHER_VAL && TIRE_SIZE_PRICES[size] !== undefined){
+    document.getElementById("tirePtsUnit").value = TIRE_SIZE_PRICES[size];
+    recalc();
   }
 }
 
@@ -948,6 +1022,10 @@ function toggleMnKeyboard(forceState, targetId){
 }
 
 function openSmartCar(){
+  // open first, synchronously in the click handler, so popup blockers don't block it
+  // (opening after the async clipboard write below can be treated as not user-initiated)
+  window.open("https://www.smartcar.mn/", "_blank", "noopener");
+
   const plateVal = document.getElementById("plate").value.trim();
   const btn = document.querySelector('.field-btn.smartcar');
   const showCopied = (ok) => {
