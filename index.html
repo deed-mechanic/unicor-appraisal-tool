@@ -62,6 +62,11 @@
   }
   textarea{resize:vertical;min-height:46px;font-family:inherit;}
   .field{margin-bottom:8px;}
+  .input-error{border-color:#c62828 !important; background:#fdecec !important;}
+  .validation-banner{
+    background:#fdecec; border:1.5px solid #c62828; color:#8f1d1d;
+    border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:13px; font-weight:600;
+  }
   .field .hint{font-size:11px;color:var(--warn);margin-top:2px;}
   .category{margin-bottom:12px;}
   .category-title{font-weight:600;font-size:13.5px;margin-bottom:6px;}
@@ -116,6 +121,24 @@
   .btn-primary{background:var(--accent);color:#fff;}
   .btn-secondary{background:#e3e8ee;color:var(--text);}
   .note{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .mop-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .mop-btn{
+    flex:0 0 auto;
+    display:flex; align-items:center; gap:5px;
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:#fff;
+    font-size:12.5px;
+    font-family:inherit;
+    color:var(--text);
+    cursor:pointer;
+    line-height:1.2;
+  }
+  .mop-btn:active{background:#eef3fa;}
+  .mop-btn .mop-pt{font-size:11px;color:var(--muted);}
+  .mop-btn.active{border-color:var(--good, #1e8e3e);background:#eafaf0;font-weight:600;}
+  .mop-btn.active .mop-pt{color:#1e8e3e;}
 
   .field-btn-row{display:flex;gap:6px;margin-top:5px;}
   .field-btn{
@@ -157,11 +180,36 @@
   }
   #mnKeyboard .kb-key:active{background:#dbe7fb;}
   #mnKeyboard .kb-key.wide{max-width:none;flex:2;font-size:12px;}
+
+  /* History modal */
+  #historyModal{
+    position:fixed; inset:0; background:rgba(20,25,35,.55);
+    display:none; align-items:flex-start; justify-content:center;
+    z-index:80; padding:22px 12px;
+  }
+  #historyModal.open{display:flex;}
+  .history-box{
+    background:#fff; border-radius:12px; max-width:820px; width:100%;
+    max-height:92vh; overflow-y:auto; padding:16px 16px 20px;
+  }
+  .history-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .history-head h3{margin:0; font-size:16px;}
+  .history-head button{padding:6px 14px; font-size:13px; background:var(--accent); color:#fff; border-radius:6px;}
+  .history-toolbar{display:flex; gap:8px; margin-bottom:10px;}
+  .history-toolbar button{padding:6px 12px; font-size:12.5px; border-radius:6px; background:#eef1f5; color:var(--text); border:1px solid #d3d8e0;}
+  .history-toolbar button.danger{background:#fdecec; color:#c62828; border-color:#f3c8c8;}
+  table.history-table{width:100%; border-collapse:collapse; font-size:12px;}
+  table.history-table th, table.history-table td{border:1px solid #dde1e7; padding:5px 6px; text-align:left;}
+  table.history-table th{background:#f4f6f8; font-weight:700;}
+  .history-empty{color:var(--muted); font-size:13px; padding:14px 4px;}
+  .save-folder-status{font-size:12px; color:#555; margin-bottom:8px; padding:6px 8px; background:#f4f6f8; border-radius:6px;}
+  .save-folder-status.ok{color:#1e6b34; background:#eaf6ee;}
+  .save-folder-status.warn{color:#8f5a00; background:#fdf3e0;}
   #mnKeyboard .kb-key.space{max-width:none;flex:6;}
 
   #printSheet{display:none;}
   @media print{
-    @page{ size:A4 portrait; margin:12mm 14mm; }
+    @page{ size:A4 portrait; margin:9mm 12mm; }
     html, body{height:auto !important;padding-bottom:0 !important;}
     body > *{display:none !important;}
     body > #printSheet{display:block !important;position:static;width:auto;padding:0;}
@@ -172,24 +220,24 @@
   .ps-logo{height:46px;width:auto;flex:none;}
   .ps-header h1{font-size:18px;margin:0;color:#123a70;line-height:1.25;font-weight:800;}
   .ps-header .meta{font-size:11.5px;color:#555;text-align:right;line-height:1.5;}
-  .ps-table{width:100%;border-collapse:collapse;margin-bottom:6px;font-size:13.5px;}
-  .ps-table td,.ps-table th{border:1px solid #c9d0d8;padding:4px 10px;text-align:left;}
+  .ps-table{width:100%;border-collapse:collapse;margin-bottom:5px;font-size:13.5px;}
+  .ps-table td,.ps-table th{border:1px solid #c9d0d8;padding:3px 10px;text-align:left;}
   .ps-table th{background:#eef1f5;width:22%;font-weight:700;color:#333;}
   .ps-cols{display:flex;gap:14px;}
   .ps-cols>div{flex:1;}
   .ps-section-title{
-    font-size:14.5px;font-weight:800;color:#123a70;margin:7px 0 4px;
-    border-left:5px solid #123a70;padding-left:9px;line-height:1.3;
+    font-size:14px;font-weight:800;color:#123a70;margin:5px 0 3px;
+    border-left:5px solid #123a70;padding-left:9px;line-height:1.25;
   }
   .ps-section-title:first-of-type{margin-top:0;}
 
-  .ps-grade-cards{display:flex;gap:10px;margin-bottom:3px;}
+  .ps-grade-cards{display:grid;grid-template-columns:repeat(3, 1fr);gap:6px 8px;margin-bottom:3px;}
   .ps-grade-card{
-    flex:1;border:1px solid #c9d0d8;border-radius:8px;padding:6px 12px;background:#fafbfc;
+    border:1px solid #c9d0d8;border-radius:8px;padding:4px 10px;background:#fafbfc;
   }
-  .ps-grade-card .gc-title{font-size:11.5px;color:#666;font-weight:700;margin-bottom:4px;}
-  .ps-grade-card .gc-value{font-size:13.5px;font-weight:700;color:#1f2933;line-height:1.35;}
-  .ps-grade-card .gc-pts{font-size:12.5px;color:#123a70;font-weight:800;margin-top:3px;}
+  .ps-grade-card .gc-title{font-size:11px;color:#666;font-weight:700;margin-bottom:2px;}
+  .ps-grade-card .gc-value{font-size:12.5px;font-weight:700;color:#1f2933;line-height:1.28;}
+  .ps-grade-card .gc-pts{font-size:12px;color:#123a70;font-weight:800;margin-top:2px;}
 
   .ps-price{
     margin-top:6px;padding:7px 18px;border:3px solid #123a70;border-radius:10px;
@@ -201,6 +249,7 @@
   .ps-price.grade-C{border-color:#e08a00;background:#fdf6ea;}
   .ps-price.grade-D{border-color:#e0670a;background:#fdf0e6;}
   .ps-price.grade-E{border-color:#c62828;background:#fbecec;}
+  .ps-price.grade-F{border-color:#7b1113;background:#f7dcdc;}
   .ps-grade-box{
     flex:none; text-align:center; border-right:2px solid rgba(0,0,0,.08); padding-right:18px;
   }
@@ -211,6 +260,7 @@
   .grade-C .ps-grade-letter{color:#e08a00;}
   .grade-D .ps-grade-letter{color:#e0670a;}
   .grade-E .ps-grade-letter{color:#c62828;}
+  .grade-F .ps-grade-letter{color:#7b1113;}
   .ps-price-mid{flex:1;}
   .ps-price .label{font-size:13px;line-height:1.7;color:#333;}
   .ps-price-right{flex:none;text-align:right;}
@@ -218,9 +268,9 @@
   .ps-price .value{font-size:36px;font-weight:800;color:#123a70;letter-spacing:-0.01em;}
   .ps-flags{margin-top:5px;font-size:13px;color:#c62828;font-weight:600;}
   .ps-notes{
-    margin-top:5px;font-size:12.5px;line-height:1.28;white-space:pre-wrap;
+    margin-top:4px;font-size:12.5px;line-height:1.25;white-space:pre-wrap;
     border:1px solid #d7dce1;border-radius:8px;background:#fafbfc;
-    padding:5px 12px;min-height:26px;
+    padding:4px 10px;min-height:22px;
   }
   .ps-notes strong{color:#123a70;display:block;margin-bottom:2px;font-size:11.5px;letter-spacing:.03em;}
   .ps-resale{
@@ -304,23 +354,41 @@
     <div class="options" id="exteriorOpts"></div>
   </div>
 
-  <!-- 4. Interior -->
+  <!-- 4. Exterior 2 (additional damage checks) -->
   <div class="card">
-    <h2>4. インテリア</h2>
+    <h2>4. 外装２（追加項目）</h2>
+    <label class="checkrow"><input type="checkbox" id="lensHeadlamp"><span>ヘッドランプ破損</span><span class="pt">−4点</span></label>
+    <label class="checkrow"><input type="checkbox" id="lensOther"><span>他レンズ破損（テールランプ等）</span><span class="pt">−2点</span></label>
+    <label class="checkrow"><input type="checkbox" id="windshieldChip"><span>フロントガラス飛び石傷</span><span class="pt">−1点</span></label>
+    <label class="checkrow"><input type="checkbox" id="windshieldCrack"><span>フロントガラスひび割れ</span><span class="pt">−5点</span></label>
+    <label class="checkrow"><input type="checkbox" id="electricalFault"><span>電装装備の機能不良</span><span class="pt">−3点</span></label>
+    <div class="note">外装スコアに合算されます</div>
+  </div>
+
+  <!-- 5. MOP additional equipment -->
+  <div class="card">
+    <h2>5. 加算装備（メーカーオプション／MOP）</h2>
+    <div class="note">メーカーオプション(MOP)として装備されている場合のみボタンを選択してください。標準装備（グレードで最初から付いているもの）は選択しないでください（加点なし）。</div>
+    <div class="mop-grid" id="mopGrid"></div>
+  </div>
+
+  <!-- 5. Interior -->
+  <div class="card">
+    <h2>6. インテリア</h2>
     <div class="options" id="interiorOpts"></div>
   </div>
 
   <!-- 5. Mechanical -->
   <div class="card">
-    <h2>5. 機能系（即修理対応が必要な項目を確認）</h2>
-    <label class="checkrow"><input type="checkbox" id="mechNoise"><span>異音あり</span><span class="pt">−2点</span></label>
-    <label class="checkrow"><input type="checkbox" id="mechOilLeak"><span>オイル漏れあり</span><span class="pt">−3点</span></label>
+    <h2>7. 機能系（即修理対応が必要な項目を確認）</h2>
+    <label class="checkrow"><input type="checkbox" id="mechNoise"><span>異音あり</span><span class="pt">−4点</span></label>
+    <label class="checkrow"><input type="checkbox" id="mechOilLeak"><span>オイル漏れあり</span><span class="pt">−6点</span></label>
     <div class="note">チェックなし＝正常作動</div>
   </div>
 
   <!-- 6. Parts replacement -->
   <div class="card">
-    <h2>6. 移動のための部品交換</h2>
+    <h2>8. 移動のための部品交換</h2>
     <label class="checkrow"><input type="checkbox" id="battery"><span>バッテリー交換要</span><span class="pt" id="batteryCostLabel">−150,000 MNT</span></label>
     <div class="cfg-inline">単価(MNT): <input type="number" id="batteryUnit" value="150000"></div>
     <div class="field">
@@ -336,19 +404,19 @@
     <div class="field">
       <label>タイヤサイズ（1本あたりの減点を自動設定・編集可）</label>
       <select id="tireSize" onchange="onTireSizeChange()">
-        <option value="17">17インチ（目安 −3点/本）</option>
-        <option value="18">18インチ（目安 −3.5点/本）</option>
-        <option value="19">19インチ（目安 −4点/本）</option>
+        <option value="17">17インチ（目安 −6点/本）</option>
+        <option value="18">18インチ（目安 −7点/本）</option>
+        <option value="19">19インチ（目安 −8点/本）</option>
         <option value="__other__">その他（点数を手入力）</option>
       </select>
     </div>
-    <div class="cfg-inline">1本あたり減点(点): <input type="number" id="tirePtsUnit" value="3" step="0.5"></div>
+    <div class="cfg-inline">1本あたり減点(点): <input type="number" id="tirePtsUnit" value="6" step="0.5"></div>
     <div class="note">日本自動車査定協会（JAAI）の方式にならい、タイヤは実額ではなく点数で減点します（1点＝基準価格の0.5%）。次のいずれかに明らかに該当する場合を「交換必要」としてカウントしてください：①見てすぐ分かるほど空気が抜けている、②見てすぐ分かるほど溝が1.6mm未満（スリップサイン露出）。判断に迷う程度の摩耗はカウント対象外です。</div>
   </div>
 
   <!-- 7. Keys -->
   <div class="card">
-    <h2>7. キー本数（スマートキー含む）</h2>
+    <h2>9. キー本数（スマートキー含む）</h2>
     <div class="grid3">
       <div class="field"><label>所持本数</label><input type="number" id="keyOwned" value="2" min="0"></div>
       <div class="field"><label>標準本数</label><input type="number" id="keyStandard" value="2" min="0"></div>
@@ -359,7 +427,7 @@
 
   <!-- 8. Major problems -->
   <div class="card">
-    <h2>8. 重大な問題</h2>
+    <h2>10. 重大な問題</h2>
     <label class="checkrow major-row"><input type="checkbox" id="flagAccident"><span>事故現状（自走不可）</span><span class="pt" id="flagAccidentPct">−20%</span></label>
     <div class="cfg-inline">減価率(%): <input type="number" id="flagAccidentUnit" value="20"></div>
     <div class="field">
@@ -396,7 +464,7 @@
 
   <!-- 9. Resale intent -->
   <div class="card">
-    <h2>9. 代理販売の意向</h2>
+    <h2>11. 代理販売の意向</h2>
     <div class="field">
       <label>方針を選択</label>
       <select id="resaleIntent">
@@ -418,6 +486,7 @@
   <div class="summary-row total"><span>査定価格</span><span id="finalOut">0 MNT</span></div>
   <div class="btnbar no-print">
     <button class="btn-secondary" onclick="resetForm()">リセット</button>
+    <button class="btn-secondary" onclick="showHistory()">査定履歴</button>
     <button class="btn-primary" onclick="preparePrint()">印刷 / PDF出力（A4・1枚）</button>
   </div>
 </div>
@@ -429,6 +498,23 @@
     <button type="button" onclick="toggleMnKeyboard(false)">閉じる</button>
   </div>
   <div id="mnKeyboardKeys"></div>
+</div>
+
+<!-- Appraisal history modal (saved locally in this browser) -->
+<div id="historyModal" class="no-print">
+  <div class="history-box">
+    <div class="history-head">
+      <h3>査定履歴（この端末のブラウザに保存）</h3>
+      <button type="button" onclick="closeHistory()">閉じる</button>
+    </div>
+    <div class="history-toolbar">
+      <button type="button" onclick="chooseSaveFolder()">保存フォルダを設定</button>
+      <button type="button" onclick="exportHistoryCsv()">CSVエクスポート</button>
+      <button type="button" class="danger" onclick="clearHistory()">履歴をすべて削除</button>
+    </div>
+    <div id="saveFolderStatus" class="save-folder-status"></div>
+    <div id="historyBody"></div>
+  </div>
 </div>
 
 <!-- Print sheet (A4 one page) -->
@@ -488,17 +574,61 @@
 // ---- configurable point tables ----
 const EXTERIOR = [
   {pts:2,   label:"目立つ傷なし",        mn:"Мэдэгдэхүйц зураас байхгүй"},
-  {pts:-3,  label:"目立つへこみあり",      mn:"Мэдэгдэхүйц хонхойлттой"},
-  {pts:-8,  label:"全体的な傷・へこみ有",  mn:"Ерөнхийдөө зураас, хонхойлттой"},
-  {pts:-6,  label:"外板パネル補修歴あり",  mn:"Гадна панелийн засварын түүхтэй"},
-  {pts:-12, label:"交換必要パネルあり",    mn:"Солих шаардлагатай панельтой"}
+  {pts:-9,  label:"目立つ傷やへこみあり",   mn:"Мэдэгдэхүйц зураас, хонхойлттой"},
+  {pts:-24, label:"全体的な傷・へこみ有",  mn:"Ерөнхийдөө зураас, хонхойлттой"},
+  {pts:-18, label:"外板パネル補修歴あり",  mn:"Гадна панелийн засварын түүхтэй"},
+  {pts:-36, label:"交換必要パネルあり",    mn:"Солих шаардлагатай панельтой"}
 ];
+// Additional exterior checks (independent checkboxes, folded into the exterior score)
+const EXTERIOR2 = [
+  {id:"lensHeadlamp",    pts:-8,  label:"ヘッドランプ破損",             mn:"Фарны шил эвдэрсэн"},
+  {id:"lensOther",       pts:-4,  label:"他レンズ破損（テールランプ等）", mn:"Бусад чийдэн эвдэрсэн"},
+  {id:"windshieldChip",  pts:-2,  label:"フロントガラス飛び石傷",        mn:"Чулуун цохилтын мөр"},
+  {id:"windshieldCrack", pts:-10, label:"フロントガラスひび割れ",        mn:"Урд шил хагарсан"},
+  {id:"electricalFault", pts:-6,  label:"電装装備の機能不良",           mn:"Цахилгаан хэрэгсэл муу"}
+];
+// Additional equipment (manufacturer options / MOP) - adds points when present as an option
+// (not when it is standard equipment for the grade). Point weights are based on typical
+// Japanese factory-option / retrofit price levels for these features, scaled onto the same
+// 1pt = 0.5% of base price system used elsewhere in this tool.
+const MOP_OPTIONS = [
+  {id:"mopBSM",          pts:4, label:"BSM（後側方警報）",     mn:"BSM (Хажуугийн бүдэг цэгийн мэдрэгч)"},
+  {id:"mopLeather",      pts:6, label:"本革シート",            mn:"Жинхэнэ арьсан суудал"},
+  {id:"mopPowerBackDoor",pts:3, label:"パワーバックドア",       mn:"Цахилгаан хойд хаалга"},
+  {id:"mopSunroof",      pts:5, label:"サンルーフ",            mn:"Люк (дээврийн цонх)"},
+  {id:"mopRearDisplay",  pts:6, label:"後席ディスプレイ",       mn:"Хойд суудлын дэлгэц"},
+  {id:"mopHUD",          pts:5, label:"ヘッドアップディスプレイ", mn:"Урд шилэн дэлгэц (HUD)"},
+  {id:"mopRoofRail",     pts:2, label:"ルーフレール",          mn:"Дээврийн рейл"},
+  {id:"mop360",          pts:7, label:"360度モニター",         mn:"360 градусын камер"},
+  {id:"mopColdClimate",  pts:6, label:"寒冷地仕様",            mn:"Хүйтэн уур амьсгалын иж бүрдэл"}
+];
+const mopState = {};
+MOP_OPTIONS.forEach(o => mopState[o.id] = false);
+
+function buildMopGrid(){
+  const container = document.getElementById("mopGrid");
+  container.innerHTML = "";
+  MOP_OPTIONS.forEach(o=>{
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mop-btn";
+    btn.id = o.id;
+    btn.innerHTML = `<span>${o.label}</span><span class="mop-pt">+${o.pts}点</span>`;
+    btn.addEventListener("click", ()=>{
+      mopState[o.id] = !mopState[o.id];
+      btn.classList.toggle("active", mopState[o.id]);
+      recalc();
+    });
+    container.appendChild(btn);
+  });
+}
+
 const INTERIOR = [
-  {pts:2,  label:"新車同様",        mn:"Шинэ мэт цэвэрхэн"},
-  {pts:0,  label:"年数相応",        mn:"Насны хэрэглээнд тохирсон байдалтай"},
-  {pts:-2, label:"目立つ汚れ有",     mn:"Мэдэгдэхүйц бохирдолтой"},
-  {pts:-5, label:"損傷箇所あり",     mn:"Гэмтэлтэй хэсэгтэй"},
-  {pts:-8, label:"シート破れあり",    mn:"Суудал урагдсан"}
+  {pts:2,   label:"新車同様",        mn:"Шинэ мэт цэвэрхэн"},
+  {pts:0,   label:"年数相応",        mn:"Насны хэрэглээнд тохирсон байдалтай"},
+  {pts:-6,  label:"目立つ汚れ有",     mn:"Мэдэгдэхүйц бохирдолтой"},
+  {pts:-15, label:"損傷箇所あり",     mn:"Гэмтэлтэй хэсэгтэй"},
+  {pts:-24, label:"シート破れあり",    mn:"Суудал урагдсан"}
 ];
 
 const sel = {exterior:null, interior:null};
@@ -530,13 +660,15 @@ function fmtSaya(amount){
 function chk(id){ return document.getElementById(id).checked; }
 
 function recalc(){
-  const extPts = sel.exterior || 0;
+  const ext2Pts = EXTERIOR2.reduce((sum, item) => sum + (chk(item.id) ? item.pts : 0), 0);
+  const extPts = (sel.exterior || 0) + ext2Pts;
   const intPts = sel.interior || 0;
-  const mechPts = (chk("mechNoise")?-2:0) + (chk("mechOilLeak")?-3:0);
+  const mechPts = (chk("mechNoise")?-4:0) + (chk("mechOilLeak")?-6:0);
   const tirePtsUnit = num("tirePtsUnit");
   const tireCount = num("tireCount");
   const tirePts = -(tirePtsUnit * tireCount);
-  const score = 80 + extPts + intPts + mechPts + tirePts;
+  const mopPts = MOP_OPTIONS.reduce((sum, item) => sum + (mopState[item.id] ? item.pts : 0), 0);
+  const score = 80 + extPts + intPts + mechPts + tirePts + mopPts;
   const scoreAdjRate = (score - 80) * 0.005;
 
   const base = num("basePrice");
@@ -608,9 +740,21 @@ function recalc(){
 
   window._calc = {score, scoreAdjRate, base, afterMajor, majorPctTotal, itemTotal, final,
     batteryCost, tirePts, tirePtsUnit, tireCount, keyCost, keyShortage, mnMileageCost, mnMonths,
-    floodLevel, floodPct, frameLevel, framePct};
+    floodLevel, floodPct, frameLevel, framePct, ext2Pts, mopPts};
 
   adjustBottomSpace();
+  clearFixedFieldErrors();
+  saveDraft();
+}
+
+function clearFixedFieldErrors(){
+  REQUIRED_FIELDS.forEach(f=>{
+    const el = document.getElementById(f.id);
+    const highlightEl = document.getElementById(f.highlightId || f.id);
+    if(!el || !highlightEl) return;
+    const filled = f.id === "basePrice" ? num("basePrice") > 0 : !!((el.value||"").toString().trim());
+    if(filled) highlightEl.classList.remove("input-error");
+  });
 }
 
 function adjustBottomSpace(){
@@ -645,13 +789,18 @@ function resetForm(){
   document.getElementById("keyUnit").value=200000;
   document.getElementById("batteryUnit").value=150000;
   document.getElementById("tireSize").value="17";
-  document.getElementById("tirePtsUnit").value=3;
+  document.getElementById("tirePtsUnit").value=6;
   document.getElementById("mnMonthUnit").value=20000;
   document.getElementById("flagAccidentUnit").value=20;
   document.getElementById("floodLevel").value="none";
   document.getElementById("frameLevel").value="none";
   document.getElementById("tireCount").value=0;
   document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+  MOP_OPTIONS.forEach(o=>{
+    mopState[o.id] = false;
+    const btn = document.getElementById(o.id);
+    if(btn) btn.classList.remove("active");
+  });
   sel.exterior=null; sel.interior=null;
   document.querySelectorAll(".opt").forEach(el=>{el.classList.remove("selected"); el.querySelector("input").checked=false;});
   document.getElementById("makerSelect").value = "";
@@ -662,6 +811,327 @@ function resetForm(){
   populateModelSelect("");
   document.getElementById("resaleIntent").value = "";
   recalc();
+  clearDraft();
+}
+
+// ---- Required-field validation before print ----
+const REQUIRED_FIELDS = [
+  {id:"plate", label:"登録番号"},
+  {id:"vin", label:"車台番号"},
+  {id:"maker", label:"メーカー（プルダウンまたは手入力）", highlightId:"makerSelect"},
+  {id:"model", label:"車種（プルダウンまたは手入力）", highlightId:"modelSelect"},
+  {id:"basePrice", label:"基準価格"}
+];
+
+function validateRequired(){
+  let firstInvalid = null;
+  const missing = [];
+  REQUIRED_FIELDS.forEach(f=>{
+    const el = document.getElementById(f.id);
+    const highlightEl = document.getElementById(f.highlightId || f.id);
+    const isMissing = f.id === "basePrice" ? (num("basePrice") <= 0) : !((el.value||"").toString().trim());
+    if(isMissing){
+      missing.push(f.label);
+      if(highlightEl) highlightEl.classList.add("input-error");
+      if(!firstInvalid) firstInvalid = highlightEl;
+    } else if(highlightEl){
+      highlightEl.classList.remove("input-error");
+    }
+  });
+  if(missing.length){
+    alert("以下の必須項目が未入力です。入力してから印刷してください:\n\n・" + missing.join("\n・"));
+    if(firstInvalid){ firstInvalid.scrollIntoView({behavior:"smooth", block:"center"}); firstInvalid.focus(); }
+    return false;
+  }
+  return true;
+}
+
+// ---- Draft autosave (localStorage) so in-progress input survives reload/crash ----
+const DRAFT_KEY = "invescoreDraftV1";
+
+function collectDraft(){
+  const data = {};
+  document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el=>{
+    data[el.id] = (el.type === "checkbox") ? el.checked : el.value;
+  });
+  ["exterior","interior"].forEach(name=>{
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    data["_radio_"+name] = checked ? checked.value : null;
+  });
+  return data;
+}
+
+function saveDraft(){
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); }catch(e){ /* storage unavailable */ }
+}
+
+function clearDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){ /* ignore */ }
+}
+
+function restoreDraft(data){
+  Object.keys(data).forEach(key=>{
+    if(key.startsWith("_radio_")) return;
+    const el = document.getElementById(key);
+    if(!el) return;
+    if(el.type === "checkbox") el.checked = !!data[key];
+    else el.value = data[key];
+  });
+  if(document.getElementById("makerSelect").value){ onMakerChange(); }
+  if(document.getElementById("modelSelect") && document.getElementById("modelSelect").value){ onModelChange(); }
+  ["exterior","interior"].forEach(name=>{
+    const val = data["_radio_"+name];
+    if(val !== null && val !== undefined){
+      const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+      if(radio){
+        radio.checked = true;
+        sel[name] = Number(val);
+        const opt = radio.closest(".opt");
+        if(opt) opt.classList.add("selected");
+      }
+    }
+  });
+  recalc();
+}
+
+// Snapshot whatever draft exists at script-load time, before the user can type
+// anything and before the deferred confirm() runs — otherwise a fast input
+// (or the delay itself) could race with a freshly-saved draft and misfire.
+let _draftSnapshotRaw = null;
+try{ _draftSnapshotRaw = localStorage.getItem(DRAFT_KEY); }catch(e){ /* storage unavailable */ }
+
+function tryRestoreDraft(){
+  try{
+    const raw = _draftSnapshotRaw;
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    const hasContent = (data.plate && data.plate.trim()) || (data.vin && data.vin.trim()) || (Number(data.basePrice) > 0);
+    if(!hasContent){ clearDraft(); return; }
+    if(confirm("前回の入力途中データが見つかりました。復元しますか？\n（キャンセルすると破棄されます）")){
+      restoreDraft(data);
+    } else {
+      clearDraft();
+    }
+  }catch(e){ /* corrupt draft, ignore */ }
+}
+
+// ---- Local appraisal history (localStorage, this browser only) ----
+const HISTORY_KEY = "invescoreAppraisalHistoryV1";
+
+function plateDigits4(plate){
+  const digitsOnly = (plate || "").replace(/\D/g, "");
+  if(digitsOnly.length >= 4) return digitsOnly.slice(-4);
+  return digitsOnly.padStart(4, "0") || "0000";
+}
+
+function saveHistoryRecord(c){
+  try{
+    const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    list.unshift({
+      ts: new Date().toISOString(),
+      plate: document.getElementById("plate").value || "",
+      plateKey: plateDigits4(document.getElementById("plate").value),
+      maker: document.getElementById("maker").value || "",
+      model: document.getElementById("model").value || "",
+      vin: document.getElementById("vin").value || "",
+      score: c.score,
+      grade: calcGrade(c.score),
+      basePrice: c.base,
+      final: c.final
+    });
+    if(list.length > 500) list.length = 500;
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  }catch(e){ /* storage unavailable, skip silently */ }
+}
+
+// ---- Auto-save one file per vehicle (keyed by the plate's last 4 digits) ----
+// Uses the File System Access API (Chrome / Edge desktop only — Safari/iPad do
+// not support it). The folder handle is remembered in IndexedDB so the user
+// only has to grant access once per browser profile.
+let saveDirHandle = null;
+
+function fsaSupported(){
+  return typeof window.showDirectoryPicker === "function";
+}
+
+function idbOpen(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open("invescoreFsaDB", 1);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore("handles"); };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+
+async function idbSet(key, val){
+  const db = await idbOpen();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction("handles", "readwrite");
+    tx.objectStore("handles").put(val, key);
+    tx.oncomplete = ()=> resolve();
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+
+async function idbGet(key){
+  const db = await idbOpen();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction("handles", "readonly");
+    const req = tx.objectStore("handles").get(key);
+    req.onsuccess = ()=> resolve(req.result || null);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+
+async function chooseSaveFolder(){
+  if(!fsaSupported()){
+    alert("このブラウザは保存フォルダの自動書き込みに対応していません。Google ChromeまたはMicrosoft Edge（PC版）でご利用ください。");
+    return;
+  }
+  try{
+    const handle = await window.showDirectoryPicker({mode:"readwrite"});
+    await idbSet("saveDir", handle);
+    saveDirHandle = handle;
+    updateSaveFolderStatus();
+  }catch(e){
+    if(e && e.name !== "AbortError") console.error(e);
+  }
+}
+
+async function ensureSaveFolderPermission(){
+  if(!saveDirHandle) return false;
+  try{
+    const opts = {mode:"readwrite"};
+    if((await saveDirHandle.queryPermission(opts)) === "granted") return true;
+    if((await saveDirHandle.requestPermission(opts)) === "granted") return true;
+    return false;
+  }catch(e){ return false; }
+}
+
+async function initSaveFolder(){
+  if(!fsaSupported()){ updateSaveFolderStatus(); return; }
+  try{
+    const handle = await idbGet("saveDir");
+    if(handle) saveDirHandle = handle;
+  }catch(e){ /* ignore */ }
+  updateSaveFolderStatus();
+}
+
+function updateSaveFolderStatus(){
+  const el = document.getElementById("saveFolderStatus");
+  if(!el) return;
+  if(!fsaSupported()){
+    el.textContent = "自動保存: このブラウザは非対応です（Chrome / Edgeでご利用ください）";
+    el.className = "save-folder-status warn";
+  } else if(saveDirHandle){
+    el.textContent = "自動保存フォルダ: 「" + saveDirHandle.name + "」に設定済み（登録番号下4桁＝ファイル名で1台1ファイル保存）";
+    el.className = "save-folder-status ok";
+  } else {
+    el.textContent = "自動保存フォルダ: 未設定（「保存フォルダを設定」から選択してください）";
+    el.className = "save-folder-status warn";
+  }
+}
+
+function buildAppraisalRecord(c){
+  return {
+    ts: new Date().toISOString(),
+    plate: document.getElementById("plate").value || "",
+    plateKey: plateDigits4(document.getElementById("plate").value),
+    maker: document.getElementById("maker").value || "",
+    model: document.getElementById("model").value || "",
+    vin: document.getElementById("vin").value || "",
+    fullModelCode: document.getElementById("fullModelCode").value || "",
+    trimGrade: document.getElementById("grade").value || "",
+    year: document.getElementById("year").value || "",
+    importDate: document.getElementById("importDate").value || "",
+    color: document.getElementById("color").value || "",
+    mileage: document.getElementById("mileage").value || "",
+    score: c.score,
+    gradeLetter: calcGrade(c.score),
+    basePrice: c.base,
+    final: c.final,
+    formData: collectDraft()
+  };
+}
+
+async function autoSaveRecordToFolder(record){
+  if(!fsaSupported() || !saveDirHandle) return {ok:false, reason:"no-folder"};
+  const permitted = await ensureSaveFolderPermission();
+  if(!permitted) return {ok:false, reason:"no-permission"};
+  try{
+    const filename = record.plateKey + ".json";
+    const fileHandle = await saveDirHandle.getFileHandle(filename, {create:true});
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(record, null, 2));
+    await writable.close();
+    return {ok:true, filename};
+  }catch(e){
+    console.error(e);
+    return {ok:false, reason:"write-error"};
+  }
+}
+
+function getHistory(){
+  try{ return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }catch(e){ return []; }
+}
+
+function showHistory(){
+  renderHistory();
+  updateSaveFolderStatus();
+  document.getElementById("historyModal").classList.add("open");
+}
+
+function closeHistory(){
+  document.getElementById("historyModal").classList.remove("open");
+}
+
+function renderHistory(){
+  const list = getHistory();
+  const body = document.getElementById("historyBody");
+  if(!list.length){
+    body.innerHTML = '<div class="history-empty">まだ査定履歴がありません（印刷／PDF出力を行うとここに記録されます）</div>';
+    return;
+  }
+  const rows = list.map(r => `
+    <tr>
+      <td>${new Date(r.ts).toLocaleString("ja-JP")}</td>
+      <td>${r.plateKey || plateDigits4(r.plate)}</td>
+      <td>${r.plate || "-"}</td>
+      <td>${((r.maker||"") + " " + (r.model||"")).trim() || "-"}</td>
+      <td>${r.vin || "-"}</td>
+      <td>${r.score}点（${r.grade}）</td>
+      <td>${fmtSaya(r.final)}</td>
+    </tr>
+  `).join("");
+  body.innerHTML = `<table class="history-table">
+    <tr><th>日時</th><th>下4桁</th><th>登録番号</th><th>車両</th><th>車台番号</th><th>スコア</th><th>査定価格</th></tr>
+    ${rows}
+  </table>`;
+}
+
+function exportHistoryCsv(){
+  const list = getHistory();
+  if(!list.length){ alert("履歴がありません"); return; }
+  const header = ["日時","下4桁","登録番号","メーカー","車種","車台番号","スコア","グレード","基準価格(MNT)","査定価格(MNT)"];
+  const rows = list.map(r => [
+    new Date(r.ts).toLocaleString("ja-JP"), r.plateKey || plateDigits4(r.plate), r.plate, r.maker, r.model, r.vin, r.score, r.grade, r.basePrice, r.final
+  ]);
+  const csv = [header, ...rows].map(row => row.map(v => `"${(v===undefined||v===null?"":v).toString().replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "invescore_appraisal_history_" + new Date().toISOString().slice(0,10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory(){
+  if(!confirm("査定履歴をすべて削除しますか？この操作は取り消せません。")) return;
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
 }
 
 function calcGrade(score){
@@ -669,7 +1139,8 @@ function calcGrade(score){
   if(score >= 75) return "B";
   if(score >= 70) return "C";
   if(score >= 65) return "D";
-  return "E";
+  if(score >= 50) return "E";
+  return "F";
 }
 
 function mnLabelFor(list, pts){
@@ -677,7 +1148,8 @@ function mnLabelFor(list, pts){
   return found ? found.mn : "Сонгоогүй";
 }
 
-function preparePrint(){
+async function preparePrint(){
+  if(!validateRequired()) return;
   const c = window._calc;
   document.getElementById("psMeta").innerHTML = "INVES CORE төсөл - Хураагдсан тээврийн хэрэгслийн үнэлгээ<br>Үүсгэсэн огноо: " + new Date().toLocaleDateString("mn-MN");
   document.getElementById("psPlate").textContent = document.getElementById("plate").value || "-";
@@ -692,19 +1164,29 @@ function preparePrint(){
 
   const extSel = document.querySelector('input[name="exterior"]:checked');
   const intSel = document.querySelector('input[name="interior"]:checked');
-  const extPts = extSel ? Number(extSel.value) : 0;
+  const extBasePts = extSel ? Number(extSel.value) : 0;
+  const ext2Active = EXTERIOR2.filter(item => chk(item.id));
+  const ext2Pts = ext2Active.reduce((sum, item) => sum + item.pts, 0);
+  const extPts = extBasePts + ext2Pts;
+  const extLabel = [
+    extSel ? mnLabelFor(EXTERIOR, extBasePts) : "Сонгоогүй",
+    ...ext2Active.map(item => item.mn)
+  ].join(", ");
   const intPts = intSel ? Number(intSel.value) : 0;
   const mechLabel = [
     chk("mechNoise") ? "Хачин чимээтэй" : null,
     chk("mechOilLeak") ? "Тос гоожилттой" : null
   ].filter(Boolean).join(", ") || "Хэвийн ажиллагаатай";
-  const mechPts = (chk("mechNoise")?-2:0) + (chk("mechOilLeak")?-3:0);
+  const mechPts = (chk("mechNoise")?-4:0) + (chk("mechOilLeak")?-6:0);
   const tireLabel = c.tireCount > 0 ? `Солих шаардлагатай (${c.tireCount} ш)` : "Солих шаардлагагүй";
+  const mopActive = MOP_OPTIONS.filter(o => mopState[o.id]);
+  const mopLabel = mopActive.length ? mopActive.map(o => o.mn).join(", ") : "Байхгүй";
   const cards = [
-    {title:"Гадна тал", value: extSel? mnLabelFor(EXTERIOR, extPts) : "Сонгоогүй", pts: extPts},
+    {title:"Гадна тал", value: extLabel, pts: extPts},
     {title:"Дотор тал", value: intSel? mnLabelFor(INTERIOR, intPts) : "Сонгоогүй", pts: intPts},
     {title:"Ажиллагаа / техникийн байдал", value: mechLabel, pts: mechPts},
-    {title:"Дугуй", value: tireLabel, pts: c.tirePts}
+    {title:"Дугуй", value: tireLabel, pts: c.tirePts},
+    {title:"Нэмэлт тоноглол (MOP)", value: mopLabel, pts: c.mopPts}
   ];
   document.getElementById("psCatCards").innerHTML = cards.map(card => `
     <div class="ps-grade-card">
@@ -772,6 +1254,15 @@ function preparePrint(){
   } else {
     psResale.textContent = "";
     psResale.className = "ps-resale none";
+  }
+
+  saveHistoryRecord(c);
+
+  const record = buildAppraisalRecord(c);
+  const saveResult = await autoSaveRecordToFolder(record);
+  if(!saveResult.ok && saveDirHandle){
+    // a folder was configured but the write failed (e.g. permission revoked) - let the user know
+    alert("査定データの自動保存に失敗しました（フォルダへのアクセス許可が切れている可能性があります）。\n「査定履歴」→「保存フォルダを設定」から再度フォルダを選択してください。");
   }
 
   window.print();
@@ -864,7 +1355,7 @@ function onModelChange(){
 }
 
 // ---- Tire size -> default deduction points (JAAI方式にならった点数減点, 2026) ----
-const TIRE_SIZE_PRICES = { "17": 3, "18": 3.5, "19": 4 };
+const TIRE_SIZE_PRICES = { "17": 6, "18": 7, "19": 8 };
 
 function onTireSizeChange(){
   const size = document.getElementById("tireSize").value;
@@ -886,7 +1377,10 @@ populateModelSelect("");
 
 buildRadioGroup("exteriorOpts", EXTERIOR, "exterior");
 buildRadioGroup("interiorOpts", INTERIOR, "interior");
+buildMopGrid();
 recalc();
+window.addEventListener("load", function(){ setTimeout(tryRestoreDraft, 50); });
+initSaveFolder();
 
 // ---- Mongolian Cyrillic on-screen keyboard (plate number field) ----
 const MN_KB_ROWS = [
